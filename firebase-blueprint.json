@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user preferences, resume data, and settings.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "baseResume": { "type": "string", "description": "The user's primary resume text or markdown." },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "jobRole": { "type": "string" },
+            "location": { "type": "string" },
+            "minSalary": { "type": "number" },
+            "remoteOnly": { "type": "boolean" },
+            "experienceLevel": { "type": "string", "enum": ["intern", "entry", "mid", "senior", "lead"] }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "JobListing": {
+      "title": "Job Listing",
+      "description": "Cached job listings fetched from external portals.",
+      "type": "object",
+      "properties": {
+        "portalId": { "type": "string", "description": "LinkedIn, Indeed, etc." },
+        "externalId": { "type": "string" },
+        "title": { "type": "string" },
+        "company": { "type": "string" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "salaryRange": { "type": "string" },
+        "postedAt": { "type": "string", "format": "date-time" },
+        "url": { "type": "string" },
+        "matchScore": { "type": "number" }
+      },
+      "required": ["title", "company", "url"]
+    },
+    "Application": {
+      "title": "Job Application",
+      "description": "Tracks the status of a specific job application for a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "tailoring", "applied", "rejected", "interviewing"] },
+        "tailoredResume": { "type": "string" },
+        "tailoredCoverLetter": { "type": "string" },
+        "appliedAt": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string" }
+      },
+      "required": ["userId", "jobId", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "Individual user profiles."
+    },
+    "/jobs/{jobId}": {
+      "schema": "JobListing",
+      "description": "Global cache of job listings."
+    },
+    "/users/{uid}/applications/{appId}": {
+      "schema": "Application",
+      "description": "User-specific job applications."
+    }
+  }
+}
